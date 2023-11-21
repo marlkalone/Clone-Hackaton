@@ -1,0 +1,34 @@
+version: '3.8'
+services:
+  mongodb:
+    image: mongo
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - go-mongo-net
+
+  server:
+    image: bonitoh/go-mongo-crud-rest-api
+    depends_on:
+      - mongodb
+    environment:
+      - MONGO_DB_HOST=mongodb
+    networks:
+      - go-mongo-net
+    ports:
+      - "9080:9080"
+
+  linuxclient:
+    image: ubuntu
+    command: >
+      bash -c "apt-get update &&
+               apt-get install -y curl vim htop &&
+               while true; do sleep 30; done;"
+    networks:
+      - go-mongo-net
+
+networks:
+  go-mongo-net:
+
+volumes:
+  mongodb_data:
